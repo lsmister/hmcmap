@@ -2,8 +2,14 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form ref="queryForm" :inline="true" :model="listQuery" class="demo-form-inline">
-        <el-form-item label="集团代码">
-          <el-input v-model="listQuery.code" placeholder="输入集团代码" />
+        <el-form-item label="酒店名称" prop="name">
+          <el-input v-model="listQuery.name" placeholder="输入酒店名称"></el-input>
+        </el-form-item>
+        <el-form-item label="酒店CODE" prop="code">
+          <el-input v-model="listQuery.code" placeholder="输入酒店CODE"></el-input>
+        </el-form-item>
+        <el-form-item label="携程子酒ID" prop="ctrip_hotel_code">
+          <el-input v-model="listQuery.ctrip_hotel_code" placeholder="输入携程子酒ID"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -11,17 +17,17 @@
             class="filter-item"
             type="primary"
             icon="el-icon-search"
-            @click="handleFilter">
-            搜索
-          </el-button>
+            @click="handleFilter"
+            >搜索</el-button
+          >
           <el-button
             v-waves
             class="filter-item"
             type="default"
             icon="el-icon-refresh-right"
-            @click="resetFilter">
-            重置
-          </el-button>
+            @click="resetFilter"
+            >重置</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -42,34 +48,56 @@
       :key="tableKey"
       v-loading="listLoading"
       stripe
-      fit>
+      fit
+    >
       <el-table-column type="selection" width="55" align="center">
       </el-table-column>
-      <el-table-column label="ID">
+      <el-table-column label="ID" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="集团代码">
+      <el-table-column label="酒店CODE" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="中文名">
+      <el-table-column label="中文名称" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.cn_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="英文名">
+      <el-table-column label="英文名称" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.en_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="经/纬度" align="center">
+        <template slot-scope="{ row }">
+          <span>{{ row.longitude }} / {{ row.latitude }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="地址" align="center">
+        <template slot-scope="{ row }">
+          <span>{{ row.address }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="电话" align="center">
+        <template slot-scope="{ row }">
+          <span>{{ row.phone }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="展示" align="center">
+        <template slot-scope="{ row }">
+          <span>{{ row.visible }}</span>
         </template>
       </el-table-column>
       <el-table-column
         label="操作"
         align="center"
         width="250"
-        class-name="small-padding fixed-width">
+        class-name="small-padding fixed-width"
+        >
         <template slot-scope="{ row, $index }">
           <el-link type="warning" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-link>
           <el-link
@@ -92,9 +120,8 @@
     <el-dialog
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
-      width="40%"
-      :close-on-click-modal="false"
-    >
+      width="50%"
+      :close-on-click-modal="false">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -113,6 +140,10 @@
           <el-input v-model="temp.en_name" placeholder="英文名" />
         </el-form-item>
       </el-form>
+      <el-row>
+        <el-col :span="12"><div class="grid-content bg-purple">1111</div></el-col>
+        <el-col :span="12"><div class="grid-content bg-purple-light">22222</div></el-col>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false"> 取消 </el-button>
         <el-button
@@ -128,7 +159,7 @@
 </template>
 
 <script>
-import * as HotelGroupApi from '@/api/hotelGroup'
+import * as MrtApi from "@/api/hotelGroup/mrt";
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -176,7 +207,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      HotelGroupApi.getList(this.listQuery).then((response) => {
+      MrtApi.getList(this.listQuery).then((response) => {
         this.list = response.data.data
         this.total = response.data.total
 
@@ -188,15 +219,8 @@ export default {
       this.getList()
     },
     resetFilter() {
-      this.listQuery.code = ''
+      this.$refs['queryForm'].resetFields()
       this.getList()
-    },
-    resetTemp() {
-      this.temp = {
-        role_id: '',
-        name: '',
-        username: ''
-      }
     },
     handleCreate() {
       this.dialogStatus = 'create'
@@ -208,7 +232,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          HotelGroupApi.createData(this.temp).then((response) => {
+          MrtApi.createData(this.temp).then((response) => {
             this.temp.id = response.data.id
             this.list.push(this.temp)
             this.dialogFormVisible = false
@@ -234,7 +258,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          HotelGroupApi.updateData(tempData).then((response) => {
+          MrtApi.updateData(tempData).then((response) => {
             const index = this.list.findIndex((v) => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
@@ -255,7 +279,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          HotelGroupApi.destroy(id).then((response) => {
+          MrtApi.destroy(id).then((response) => {
             this.$notify({
               title: '成功',
               message: response.message,

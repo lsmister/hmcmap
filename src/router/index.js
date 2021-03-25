@@ -65,7 +65,7 @@ export const asyncRoutes = [
     path: '/system',
     component: Layout,
     name: 'System',
-    meta: { title: 'System', icon: 'el-icon-s-help', roles: ['supper_admin'] },
+    meta: { title: '系统管理', icon: 'el-icon-s-help', roles: ['supper_admin'] },
     children: [
       {
         path: 'user',
@@ -78,15 +78,37 @@ export const asyncRoutes = [
         name: 'Role',
         component: () => import('@/views/system/role'),
         meta: { title: '角色', icon: 'role' }
-      },
-      // {
-      //   path: 'menu',
-      //   name: 'Menu',
-      //   component: () => import('@/views/system/menu'),
-      //   meta: { title: '菜单', icon: 'list' }
-      // },
+      }
     ]
   },
+
+  {
+    path: '/hotelGroup',
+    component: Layout,
+    redirect: '/hotelGroup',
+    children: [{
+      path: 'hotelGroup',
+      name: 'HotelGroup',
+      component: () => import('@/views/hotel_group'),
+      meta: { title: '酒店集团', icon: 'el-icon-s-help', roles: ['supper_admin'] },
+    }]
+  },
+
+  {
+    path: '/mrtManage',
+    component: Layout,
+    name: 'MrtManage',
+    meta: { title: 'MRT集团管理', icon: 'el-icon-s-help', roles: ['supper_admin'] },
+    children: [
+      {
+        path: 'mrtHotel',
+        name: 'MrtHotel',
+        component: () => import('@/views/hotelGroup/mrt/hotel'),
+        meta: { title: '酒店', icon: 'user' }
+      }
+    ]
+  },
+  
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
