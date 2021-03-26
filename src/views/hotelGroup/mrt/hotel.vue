@@ -18,16 +18,14 @@
             type="primary"
             icon="el-icon-search"
             @click="handleFilter"
-            >搜索</el-button
-          >
+            >搜索</el-button>
           <el-button
             v-waves
             class="filter-item"
             type="default"
             icon="el-icon-refresh-right"
             @click="resetFilter"
-            >重置</el-button
-          >
+            >重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -50,54 +48,66 @@
       stripe
       fit
     >
-      <el-table-column type="selection" width="55" align="center">
+      <el-table-column type="selection" width="55" align="left">
       </el-table-column>
-      <el-table-column label="ID" align="center">
+      <el-table-column label="ID" align="left" width="100" fixed="left">
         <template slot-scope="{ row }">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="酒店CODE" align="center">
+      <el-table-column label="酒店CODE" align="left" width="100">
         <template slot-scope="{ row }">
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="中文名称" align="center">
+      <el-table-column label="中文名称" align="left">
         <template slot-scope="{ row }">
           <span>{{ row.cn_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="英文名称" align="center">
+      <el-table-column label="英文名称" align="left">
         <template slot-scope="{ row }">
           <span>{{ row.en_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="经/纬度" align="center">
+      <el-table-column label="经/纬度" align="left">
         <template slot-scope="{ row }">
-          <span>{{ row.longitude }} / {{ row.latitude }}</span>
+          <span>{{ row.longitude }} | {{ row.latitude }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地址" align="center">
+      <el-table-column label="国家" align="left">
+        <template slot-scope="{ row }">
+          <span>{{ row.country }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="地址" align="left">
         <template slot-scope="{ row }">
           <span>{{ row.address }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="电话" align="center">
+      <el-table-column label="电话" align="left">
         <template slot-scope="{ row }">
           <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="展示" align="center">
+      <el-table-column label="状态" align="left">
         <template slot-scope="{ row }">
-          <span>{{ row.visible }}</span>
+          <el-switch
+            v-model="row.status"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :active-value="1"
+            :inactive-value="0"
+            @change="changeStatus($event, row.id)">
+          </el-switch>
         </template>
       </el-table-column>
       <el-table-column
         label="操作"
         align="center"
-        width="250"
-        class-name="small-padding fixed-width"
-        >
+        width="200"
+        fixed="right"
+        class-name="small-padding fixed-width">
         <template slot-scope="{ row, $index }">
           <el-link type="warning" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-link>
           <el-link
@@ -130,20 +140,51 @@
         label-width="100px"
         style="padding: 0 30px"
       >
-        <el-form-item label="酒店代码" prop="code">
-          <el-input v-model="temp.code" placeholder="酒店代码" />
-        </el-form-item>
-        <el-form-item label="中文名" prop="cn_name">
-          <el-input v-model="temp.cn_name" placeholder="中文名" />
-        </el-form-item>
-        <el-form-item label="英文名" prop="en_name">
-          <el-input v-model="temp.en_name" placeholder="英文名" />
-        </el-form-item>
+        <el-row :gutter="80">
+          <el-col :span="12">
+            <div class="grid-content bg-purple">
+              <el-form-item label="酒店代码 :" prop="code">
+                <el-input v-model="temp.code" placeholder="酒店代码" :disabled="dialogStatus === 'create' ? false : true" />
+              </el-form-item>
+              <el-form-item label="中文名 :" prop="cn_name">
+                <el-input v-model="temp.cn_name" placeholder="中文名" />
+              </el-form-item>
+              <el-form-item label="英文名 :" prop="en_name">
+                <el-input v-model="temp.en_name" placeholder="英文名" />
+              </el-form-item>
+              <el-form-item label="经度 :" prop="longitude">
+                <el-input v-model="temp.longitude" placeholder="经度" />
+              </el-form-item>
+              <el-form-item label="纬度:" prop="latitude">
+                <el-input v-model="temp.latitude" placeholder="纬度" />
+              </el-form-item>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="grid-content bg-purple-light">
+              <el-form-item label="国家 :" prop="code">
+                <el-input v-model="temp.country" placeholder="国家" />
+              </el-form-item>
+              <el-form-item label="地址 :" prop="address">
+                <el-input v-model="temp.address" placeholder="详细地址" />
+              </el-form-item>
+              <el-form-item label="电话 :" prop="phone">
+                <el-input v-model="temp.phone" placeholder="联系电话" />
+              </el-form-item>
+              <el-form-item label="币种 :" prop="cur">
+                <el-input v-model="temp.cur" placeholder="币种" />
+              </el-form-item>
+              <el-form-item label="预订前是否展示 :" prop="address_visible" label-width="120px">
+                <el-radio-group v-model="temp.address_visible">
+                  <el-radio label="true">展示</el-radio>
+                  <el-radio label="false">不展示</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </div>
+          </el-col>
+        </el-row>
       </el-form>
-      <el-row>
-        <el-col :span="12"><div class="grid-content bg-purple">1111</div></el-col>
-        <el-col :span="12"><div class="grid-content bg-purple-light">22222</div></el-col>
-      </el-row>
+      
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false"> 取消 </el-button>
         <el-button
@@ -159,7 +200,7 @@
 </template>
 
 <script>
-import * as MrtApi from "@/api/hotelGroup/mrt";
+import * as HotelApi from "@/api/mrt/hotel";
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -178,17 +219,21 @@ export default {
         limit: 10,
         code: ''
       },
-      roleLists: [],
       temp: {
         id: undefined,
         code: '',
         cn_name: '',
-        en_name: ''
+        en_name: '',
+        longitude: '',
+        latitude: '',
+        country: '',
+        address: '',
+        phone: '',
+        cur: '',
+        address_visible: 'false'
       },
       tempUserId: undefined,
-      allotRoleIds: [],
       dialogFormVisible: false,
-      dialogARVisible: false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -197,7 +242,13 @@ export default {
       rules: {
         code: [{ required: true, message: '酒店代码必填', trigger: 'blur' }],
         cn_name: [{ required: true, message: '中文名必填', trigger: 'blur' }],
-        en_name: [{ required: true, message: '英文名必填', trigger: 'blur' }]
+        en_name: [{ required: true, message: '英文名必填', trigger: 'blur' }],
+        longitude: [{ required: true, message: '经度必填', trigger: 'blur' }],
+        latitude: [{ required: true, message: '纬度必填', trigger: 'blur' }],
+        country: [{ required: true, message: '国家必填', trigger: 'blur' }],
+        address: [{ required: true, message: '地址必填', trigger: 'blur' }],
+        phone: [{ required: true, message: '电话', trigger: 'blur' }],
+        cur: [{ required: true, message: '币种', trigger: 'blur' }]
       }
     }
   },
@@ -207,7 +258,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      MrtApi.getList(this.listQuery).then((response) => {
+      HotelApi.getList(this.listQuery).then((response) => {
         this.list = response.data.data
         this.total = response.data.total
 
@@ -232,7 +283,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          MrtApi.createData(this.temp).then((response) => {
+          HotelApi.createData(this.temp).then((response) => {
             this.temp.id = response.data.id
             this.list.push(this.temp)
             this.dialogFormVisible = false
@@ -258,7 +309,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          MrtApi.updateData(tempData).then((response) => {
+          HotelApi.updateData(tempData).then((response) => {
             const index = this.list.findIndex((v) => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
             this.dialogFormVisible = false
@@ -273,13 +324,13 @@ export default {
       })
     },
     handleDelete(id, index) {
-      this.$confirm('此操作将永久删除该集团, 是否确定?', '提示', {
+      this.$confirm('此操作将永久删除该酒店, 是否确定?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          MrtApi.destroy(id).then((response) => {
+          HotelApi.destroy(id).then((response) => {
             this.$notify({
               title: '成功',
               message: response.message,
@@ -295,6 +346,16 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+    changeStatus(val, id) {
+      HotelApi.changeStatus(id, val).then((response) => {
+        this.$notify({
+          title: '成功',
+          message: response.message,
+          type: 'success',
+          duration: 2000
+        })
+      })
     }
   }
 }

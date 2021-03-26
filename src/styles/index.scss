@@ -63,3 +63,20 @@ div:focus {
 .app-container {
   padding: 20px;
 }
+
+.el-table {
+  color: #333;
+}
+
+.el-table thead {
+  color: #999;
+}
+
+.el-link.el-link--warning {
+  color: #ea9009;
+}
+
+.el-input.is-disabled .el-input__inner {
+  background-color: rgb(232, 232, 232);
+  color: #666;
+}

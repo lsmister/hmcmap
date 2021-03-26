@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 
 
+//酒店
 export function getList(query) {
   return request({
     url: '/group/mrt/hotel/lists',
@@ -29,5 +30,16 @@ export function destroy(id) {
   return request({
     url: '/group/mrt/hotel/destroy/'+id,
     method: 'delete'
+  })
+}
+
+export function changeStatus(id, val) {
+  return request({
+    url: '/group/mrt/hotel/changeStatus',
+    method: 'patch',
+    data: {
+      id: id,
+      status: val
+    }
   })
 }

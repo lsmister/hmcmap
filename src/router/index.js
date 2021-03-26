@@ -105,6 +105,12 @@ export const asyncRoutes = [
         name: 'MrtHotel',
         component: () => import('@/views/hotelGroup/mrt/hotel'),
         meta: { title: '酒店', icon: 'user' }
+      },
+      {
+        path: 'mrtRoomType',
+        name: 'MrtRoomType',
+        component: () => import('@/views/hotelGroup/mrt/room_type'),
+        meta: { title: '基础房型', icon: 'user' }
       }
     ]
   },
