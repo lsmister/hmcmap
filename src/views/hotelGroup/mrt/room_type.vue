@@ -11,6 +11,12 @@
         <el-form-item label="携程房型CODE" prop="ctrip_room_code">
           <el-input v-model="listQuery.ctrip_room_code" placeholder="输入携程房型CODE"></el-input>
         </el-form-item>
+        <el-form-item label="匹配状态:" prop="match_status">
+          <el-select v-model="listQuery.match_status" placeholder="请选择" style="width: 120px;" clearable>
+            <el-option key="0" label="待匹配" value="0"></el-option>
+            <el-option key="1" label="已匹配" value="1"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button
             v-waves
@@ -87,6 +93,12 @@
       <el-table-column label="英文名">
         <template slot-scope="{ row }">
           <span>{{ row.en_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="匹配状态" align="left">
+        <template slot-scope="{ row }">
+          <el-tag v-if="row.match_status == 1" type="success">已匹配</el-tag>
+          <el-tag v-else type="warning">待匹配</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -238,15 +250,40 @@
         <el-table-column property="hotel_code" label="酒店CODE" width="100"></el-table-column>
         <el-table-column property="room_type_code" label="房型CODE" width="80"></el-table-column>
         <el-table-column property="rate_plan_code" label="子房型CODE" width="100"></el-table-column>
-        <el-table-column property="max_occupancy" label="最大入住人数" width="100"></el-table-column>
+        <el-table-column label="最大入住人数" width="100">
+          <template slot-scope="{ row }">
+            <el-input v-model="row.max_occupancy" placeholder="人数"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="早餐" width="100">
+          <template slot-scope="{ row }">
+            <el-input v-model="row.has_breakfast" placeholder="数量"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="午餐" width="100">
+          <template slot-scope="{ row }">
+            <el-input v-model="row.has_lunch" placeholder="数量"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="晚餐" width="100">
+          <template slot-scope="{ row }">
+            <el-input v-model="row.has_dinner" placeholder="数量"></el-input>
+          </template>
+        </el-table-column>
+        <el-table-column label="匹配状态" align="left">
+          <template slot-scope="{ row }">
+            <el-tag v-if="row.match_status == 1" type="success">已匹配</el-tag>
+            <el-tag v-else type="warning">待匹配</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           label="操作"
           align="center"
-          width="200"
+          width="80"
           fixed="right"
           class-name="small-padding fixed-width">
           <template slot-scope="{ row, $index }">
-            <el-link type="primary" @click="editSubRoom(row, $index)">编辑</el-link>
+            <el-button type="danger" @click="editSubRoom(row, $index)">更新</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -276,7 +313,8 @@ export default {
         limit: 10,
         hotel_code: '',
         room_type_code: '',
-        ctrip_room_code: ''
+        ctrip_room_code: '',
+        match_status: null
       },
       subRoomLists: [],
       smokeOptions: [
@@ -413,6 +451,16 @@ export default {
       RoomTypeApi.lookSubRooms(id).then((response) => {
         this.sublistLoading = false
         this.subRoomLists = response.data
+      })
+    },
+    editSubRoom(row, index) {
+      RoomTypeApi.editSubRoom(row).then((response) => {
+        this.$notify({
+          title: '成功',
+          message: response.message,
+          type: 'success',
+          duration: 2000
+        })
       })
     }
   }

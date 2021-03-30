@@ -43,3 +43,10 @@ export function changeStatus(id, val) {
     }
   })
 }
+
+export function updHotelMapStatus() {
+  return request({
+    url: '/group/mrt/hotel/updMappingStatus',
+    method: 'get'
+  })
+}

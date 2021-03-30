@@ -2,14 +2,20 @@
   <div class="app-container">
     <div class="filter-container">
       <el-form ref="queryForm" :inline="true" :model="listQuery" class="demo-form-inline">
-        <el-form-item label="酒店名称" prop="name">
+        <el-form-item label="酒店名称:" prop="name">
           <el-input v-model="listQuery.name" placeholder="输入酒店名称"></el-input>
         </el-form-item>
-        <el-form-item label="酒店CODE" prop="code">
+        <el-form-item label="酒店CODE:" prop="code">
           <el-input v-model="listQuery.code" placeholder="输入酒店CODE"></el-input>
         </el-form-item>
-        <el-form-item label="携程子酒ID" prop="ctrip_hotel_code">
+        <el-form-item label="携程子酒ID:" prop="ctrip_hotel_code">
           <el-input v-model="listQuery.ctrip_hotel_code" placeholder="输入携程子酒ID"></el-input>
+        </el-form-item>
+        <el-form-item label="匹配状态:" prop="match_status">
+          <el-select v-model="listQuery.match_status" placeholder="请选择" style="width: 120px;" clearable>
+            <el-option key="0" label="待匹配" value="0"></el-option>
+            <el-option key="1" label="已匹配" value="1"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -36,6 +42,13 @@
         icon="el-icon-plus"
         @click="handleCreate">
         添加
+      </el-button>
+      <el-button
+        class="filter-item"
+        type="primary"
+        icon="el-icon-refresh"
+        @click="updHotelMapStatus">
+        更新Mapping状态
       </el-button>
     </div>
 
@@ -88,6 +101,12 @@
       <el-table-column label="电话" align="left">
         <template slot-scope="{ row }">
           <span>{{ row.phone }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="匹配状态" align="left">
+        <template slot-scope="{ row }">
+          <el-tag v-if="row.match_status == 1" type="success">已匹配</el-tag>
+          <el-tag v-else type="warning">待匹配</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="left">
@@ -217,7 +236,10 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        code: ''
+        name: '',
+        code: '',
+        ctrip_hotel_code: '',
+        match_status: null
       },
       temp: {
         id: undefined,
@@ -356,6 +378,24 @@ export default {
           duration: 2000
         })
       })
+    },
+    updHotelMapStatus() {
+      this.$confirm('是否要更新全部酒店的MAPPING状态?', '提示', {
+        confirmButtonText: '更新',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+          HotelApi.updHotelMapStatus().then((response) => {
+            this.$notify({
+              title: '成功',
+              message: response.message,
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }).catch(() => {
+          console.log('取消更新')
+        })
     }
   }
 }

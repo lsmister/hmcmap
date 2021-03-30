@@ -39,4 +39,19 @@ import request from '@/utils/request'
       method: 'get'
     })
   }
+
+  export function editSubRoom(row) {
+
+    return request({
+      url: '/group/mrt/roomType/editSubRoom',
+      method: 'patch',
+      data: {
+        id: row.id,
+        max_occupancy: row.max_occupancy,
+        has_breakfast: row.has_breakfast,
+        has_dinner: row.has_dinner,
+        has_lunch: row.has_lunch
+      }
+    })
+  }
   
