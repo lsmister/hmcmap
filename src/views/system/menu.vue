@@ -15,7 +15,7 @@
             style="border: 1px solid #ddd;padding:10px;"
             v-loading="menuload">
             <span class="custom-tree-node" slot-scope="{ node, data }">
-                <span class="title">{{ node.label }}</span>
+                <span class="title"><svg-icon v-if="data.icon" :icon-class="data.icon" /> {{ node.label }}</span>
                 <span class="action">
                     <el-link type="success" @click="handleCreate(data)">添加</el-link>
                     <el-link type="warning" @click="handleUpdate(data)" v-if="data.id != 0">编辑</el-link>
@@ -53,7 +53,7 @@
           <el-input v-model="temp.title" placeholder="输入 菜单名称" />
         </el-form-item>
 
-        <el-form-item label="菜单图标">
+        <el-form-item label="菜单图标" prop="icon">
           <el-popover
             placement="bottom-start"
             width="460"
@@ -132,7 +132,7 @@ export default {
             rules: {
                 title: [{ required: true, message: '菜单名称必填', trigger: 'blur' }],
                 order: [{ required: true, message: '排序必填', trigger: 'blur' }],
-                component: [{ required: true, message: '组件地址必填', trigger: 'blur' }],
+                // component: [{ required: true, message: '组件地址必填', trigger: 'blur' }],
             }
         }
     },
@@ -180,13 +180,14 @@ export default {
       handleCreate(data) {
         this.dialogStatus = 'create'
         this.dialogFormVisible = true
+
         this.temp.parent_id = data.id
 
         let da = this.findParent(this.list, data.id)
         this.temp.parent_name = da.reverse().join(' -> ')
         
         this.$nextTick(() => {
-            this.temp.icon = ''
+            // this.temp.icon = ''
             this.$refs['dataForm'].resetFields()
         })
       },
@@ -209,11 +210,12 @@ export default {
       },
       handleUpdate(data) {
         MenuApi.getMenuInfo(data.id).then(response => {
-          this.temp = Object.assign({}, response.data)
+          
           this.dialogStatus = 'update'
           this.dialogFormVisible = true
           this.$nextTick(() => {
             this.$refs['dataForm'].clearValidate()
+            this.temp = Object.assign({}, response.data)
           })
         })
       },
@@ -275,8 +277,8 @@ export default {
     }
 
     .custom-tree-node:hover {
-       background-color: #eee;
-       color: #409EFF;
+       /* background-color: #eee; */
+       color: #337AB7;
     }
 
     .custom-tree-node .el-link {

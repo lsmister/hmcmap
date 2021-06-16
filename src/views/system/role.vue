@@ -49,6 +49,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row, $index}" v-if="isAction(row)">
+          <el-link type="primary" @click="handleAllotPermission(row)">分配权限</el-link>
           <el-link type="warning" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-link>
           <el-link type="danger" icon="el-icon-delete" @click="handleDelete(row.id, $index)">删除</el-link>
         </template>
@@ -81,7 +82,10 @@
       <el-row style="margin-bottom: 10px;">
         <el-button type="primary" @click="unFoldAll(true)">全部展开</el-button>
         <el-button type="warning" @click="unFoldAll(false)">全部折叠</el-button>
+        <el-button type="primary" @click="unSelectAll(true)" plain>全选</el-button>
+        <el-button type="warning" @click="unSelectAll(false)" plain>全不选</el-button>
       </el-row>
+      <el-divider></el-divider>
         <el-tree
             :data="permissionLists"
             show-checkbox
@@ -164,7 +168,6 @@ export default {
   },
   methods: {
     isAction: function (params) {
-      console.log(params)
       const isarr = [1, 2]
       if (isarr.indexOf(params.id) != -1) {
         return false
@@ -271,6 +274,7 @@ export default {
       
     },
     handleAllotPermission(row) {
+
       const loading = this.$loading({
           lock: true,
           text: '加载中',
@@ -295,7 +299,7 @@ export default {
             }
           
           loading.close()
-          // this.dialogAPVisible = true
+          this.dialogAPVisible = true
         })
         
     },
@@ -325,6 +329,13 @@ export default {
       this.sourceDataIds.forEach(function(i) {
         self.$refs.tree.store.nodesMap[i].expanded = flag
       });
+    },
+    unSelectAll (flag) {
+      if (flag) {
+        this.$refs.tree.setCheckedKeys(this.sourceDataIds);
+      }else {
+        this.$refs.tree.setCheckedKeys([]);
+      }
     }
   }
 }
