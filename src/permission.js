@@ -19,26 +19,22 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken()
-
+  
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
     } else {
-      const hasRoles = store.getters.roles && store.getters.roles.length > 0
-
-      if (hasRoles) {
+      
+      if (store.getters.role) {
         next()
       } else {
-        console.log("qushuju...")
         try {
           // get user info
-          const { roles } = await store.dispatch('user/getInfo')
+          const { role } = await store.dispatch('user/getInfo')
 
-          const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-  
-          // dynamically add accessible routes
+          const accessRoutes = await store.dispatch('permission/generateRoutes', role)
           router.addRoutes(accessRoutes)
 
           // next()

@@ -1,23 +1,15 @@
 import request from '@/utils/request'
 
-export function getList(query) {
+export function getLevelOptions() {
   return request({
-    url: '/system/menu/lists',
-    method: 'get',
-    params: query
-  })
-}
-
-export function getTopLevel() {
-  return request({
-    url: '/system/menu/getTopLevel',
+    url: '/system/menu/getLevelOptions',
     method: 'get'
   })
 }
 
-export function getSelectOptions() {
+export function getMenuInfo(id) {
   return request({
-    url: '/system/menu/getSelectOptions',
+    url: '/system/menu/getMenuInfo/'+id,
     method: 'get'
   })
 }

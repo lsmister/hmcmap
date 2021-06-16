@@ -55,8 +55,7 @@ export const constantRoutes = [
     }]
   },
 
-  // 404 page must be placed at the end !!!
-  // { path: '*', redirect: '/404', hidden: true }
+  
 ]
 
 
@@ -78,46 +77,18 @@ export const asyncRoutes = [
         name: 'Role',
         component: () => import('@/views/system/role'),
         meta: { title: '角色', icon: 'role' }
-      }
-    ]
-  },
-
-  {
-    path: '/hotelGroup',
-    component: Layout,
-    redirect: '/hotelGroup',
-    children: [{
-      path: 'hotelGroup',
-      name: 'HotelGroup',
-      component: () => import('@/views/hotel_group'),
-      meta: { title: '酒店集团', icon: 'el-icon-s-help', roles: ['supper_admin'] },
-    }]
-  },
-
-  {
-    path: '/mrtManage',
-    component: Layout,
-    name: 'MrtManage',
-    meta: { title: 'MRT集团管理', icon: 'el-icon-s-help', roles: ['supper_admin'] },
-    children: [
-      {
-        path: 'mrtHotel',
-        name: 'MrtHotel',
-        component: () => import('@/views/hotelGroup/mrt/hotel'),
-        meta: { title: '酒店', icon: 'user' }
       },
       {
-        path: 'mrtRoomType',
-        name: 'MrtRoomType',
-        component: () => import('@/views/hotelGroup/mrt/room_type'),
-        meta: { title: '基础房型', icon: 'user' }
+        path: 'menu',
+        name: 'Menu',
+        component: () => import('@/views/system/menu'),
+        meta: { title: '权限', icon: 'role' }
       }
     ]
   },
-  
 
-  // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
+  
 ]
 
 const createRouter = () => new Router({

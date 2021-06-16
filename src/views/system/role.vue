@@ -48,8 +48,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="250" class-name="small-padding fixed-width">
-        <template slot-scope="{row, $index}">
-          <!-- <el-link type="primary" @click="handleAllotPermission(row)">分配权限</el-link> -->
+        <template slot-scope="{row, $index}" v-if="isAction(row)">
           <el-link type="warning" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-link>
           <el-link type="danger" icon="el-icon-delete" @click="handleDelete(row.id, $index)">删除</el-link>
         </template>
@@ -152,7 +151,7 @@ export default {
         name: [{ required: true, message: '名称必填', trigger: 'blur' }],
         slug: [
             { required: true, message: '标识必填', trigger: 'blur' },
-            { pattern: /^[a-zA-Z_]+$/, message: '标识由下划线或小写字母组合而成', trigger: 'blur'}
+            { pattern: /^[0-9a-zA-Z_]+$/, message: '标识由下划线或小写字母或数字组合而成', trigger: 'blur'}
         ]
       }
     }
@@ -160,7 +159,19 @@ export default {
   created() {
     this.getList()
   },
+  computed: {
+    
+  },
   methods: {
+    isAction: function (params) {
+      console.log(params)
+      const isarr = [1, 2]
+      if (isarr.indexOf(params.id) != -1) {
+        return false
+      }
+
+      return true;
+    },
     getList() {
       this.listLoading = true
       RoleApi.getList(this.listQuery).then(response => {

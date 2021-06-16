@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true" :model="listQuery" class="demo-form-inline">
+      <el-form :inline="true" :model="listQuery" class="demo-form-inline" ref="queryForm">
         <el-form-item label="编号">
           <el-input v-model="listQuery.id" placeholder="输入ID"></el-input>
         </el-form-item>
@@ -73,14 +73,7 @@
       </el-table-column>
       <el-table-column label="角色" align="center">
         <template slot-scope="{ row }">
-          <div class="tag-group">
-            <el-tag
-              v-for="item in row.role_labels"
-              :key="item.id"
-              effect="dark">
-              {{ item.name }}
-            </el-tag>
-          </div>
+          <span>{{ row.role_label }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -89,19 +82,14 @@
         width="250"
         class-name="small-padding fixed-width"
       >
-        <template slot-scope="{ row, $index }">
-          <el-link type="primary" @click="handleAllotRole(row)"
-            >分配角色</el-link
-          >
-          <el-link type="warning" icon="el-icon-edit" @click="handleUpdate(row)"
-            >编辑</el-link
-          >
+        <template slot-scope="{ row, $index }" v-if="row.id != 1">
+          <el-link type="primary" @click="handleAllotRole(row)">分配角色</el-link>
+          <el-link type="warning" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-link>
           <el-link
-            type="danger"
-            icon="el-icon-delete"
-            @click="handleDelete(row.id, $index)"
-            >删除</el-link
-          >
+          type="danger"
+          icon="el-icon-delete"
+          @click="handleDelete(row.id, $index)"
+          >删除</el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -163,9 +151,9 @@
       width="40%"
       :close-on-click-modal="false"
     >
-      <el-checkbox-group v-model="allotRoleIds">
-        <el-checkbox v-for="item in roleLists" :key="item.id" :label="item.id" border>{{ item.name }}</el-checkbox>
-      </el-checkbox-group>
+      <el-radio-group v-model="allotRoleId">
+        <el-radio v-for="item in roleLists" :key="item.id" :label="item.id" border>{{ item.name }}</el-radio>
+      </el-radio-group>
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogARVisible = false"> 取消 </el-button>
@@ -205,7 +193,7 @@ export default {
         password: "",
       },
       tempUserId: undefined,
-      allotRoleIds: [],
+      allotRoleId: 0,
       dialogFormVisible: false,
       dialogARVisible: false,
       dialogStatus: "",
@@ -238,24 +226,14 @@ export default {
       this.getList();
     },
     resetFilter() {
-      this.listQuery.name = "";
-      this.listQuery.username = ""
-      this.listQuery.id = undefined
+      this.$refs['queryForm'].resetFields()
       this.getList()
     },
-    resetTemp() {
-      this.temp = {
-        role_id: "",
-        name: "",
-        username: "",
-      };
-    },
     handleCreate() {
-      this.resetTemp();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
+        this.$refs["dataForm"].resetFields();
       });
     },
     createData() {
@@ -340,18 +318,14 @@ export default {
         this.roleLists = response.data.all_roles;
         loading.close()
         this.dialogARVisible = true;
-        this.allotRoleIds = response.data.user_role_ids;
+        this.allotRoleId = response.data.user_role_id;
       });
     },
     subAllotRole() {
-      if (this.allotRoleIds.length == 0) {
-        this.$message.error("请至少分配一个角色");
-        return false;
-      }
       const tempData = new Object();
       tempData.user_id = this.tempUserId;
-      tempData.role_ids = this.allotRoleIds;
-      UserApi.allotRole("patch", tempData).then((response) => {
+      tempData.role_id = this.allotRoleId;
+      UserApi.allotRole("post", tempData).then((response) => {
         const index = this.list.findIndex((v) => v.id === response.data.id);
         this.list.splice(index, 1, response.data);
         this.dialogARVisible = false;
