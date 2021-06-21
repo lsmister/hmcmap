@@ -47,6 +47,12 @@ export function allotPermission(method, data = '') {
         data
       })
     }
-    
-  }
+}
+
+export function getAsyncMenus(role_name) {
+  return request({
+    url: '/system/role/getAsyncMenus/'+role_name,
+    method: 'get'
+  })
+}
 

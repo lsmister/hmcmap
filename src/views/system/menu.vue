@@ -24,33 +24,25 @@
             </span>
             </el-tree>
         </el-col>
-<!--         <el-col :span="10" style="border: 1px solid #777;">
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span><b>操作</b></span>
-                </div>
-                <el-form ref="form" :model="form" label-width="80px">
-                    <el-form-item label="父级菜单" prop="parent_id">
-                        <el-input v-model="form.parent_name" readonly="readonly"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="success" @click="onSubmit" :disabled="isSubmitDis">提交</el-button>
-                        <el-button type="default">重置</el-button>
-                    </el-form-item>
-                </el-form>
-            </el-card>
-        </el-col> -->
     </el-row>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="padding: 0 30px;">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px" style="padding: 0 30px;">
 
         <el-form-item label="父级菜单">
           <el-input v-model="temp.parent_name" readonly/>
         </el-form-item>
 
-        <el-form-item label="菜单名称" prop="title">
+        <el-form-item label="路径" prop="path">
+          <el-input v-model="temp.path" placeholder="输入 菜单路径" />
+        </el-form-item>
+
+        <el-form-item label="菜单名称(中文)" prop="title">
           <el-input v-model="temp.title" placeholder="输入 菜单名称" />
+        </el-form-item>
+
+        <el-form-item label="菜单名称(英文)" prop="name">
+          <el-input v-model="temp.name" placeholder="输入 菜单名称" />
         </el-form-item>
 
         <el-form-item label="菜单图标" prop="icon">
@@ -127,12 +119,15 @@ export default {
                 title: '',
                 icon: '',
                 component: '',
-                order: 0
+                order: 0,
+                path: '',
+                name: ''
             },
             rules: {
                 title: [{ required: true, message: '菜单名称必填', trigger: 'blur' }],
                 order: [{ required: true, message: '排序必填', trigger: 'blur' }],
-                // component: [{ required: true, message: '组件地址必填', trigger: 'blur' }],
+                path: [{ required: true, message: '菜单路径必填', trigger: 'blur' }],
+                name: [{ required: true, message: '菜单路径必填', trigger: 'blur' }],
             }
         }
     },

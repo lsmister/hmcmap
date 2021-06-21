@@ -1,4 +1,8 @@
 import { asyncRoutes, constantRoutes } from '@/router'
+import { getAsyncMenus } from '@/api/system/role'
+import Layout from '@/layout'
+import { componentMap } from '@/utils/component-map'
+
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -13,22 +17,28 @@ function hasPermission(role, route) {
   }
 }
 
-/**
- * Filter asynchronous routing tables by recursion
- * @param routes asyncRoutes
- * @param roles
- */
-export function filterAsyncRoutes(routes, role) {
+
+export function filterAsyncRoutes(routes) {
   const res = []
 
   routes.forEach(route => {
+    // console.log(route)
     const tmp = { ...route }
-    if (hasPermission(role, tmp)) {
-      if (tmp.children) {
-        tmp.children = filterAsyncRoutes(tmp.children, role)
-      }
-      res.push(tmp)
+    if (tmp.component) {
+      // tmp.component = () => import('@/views/system/user')
+      // tmp.component = (resolve) => require([`@/views/${tmp.component}`], resolve)
+      tmp.component = componentMap[tmp.component]
+    }else {
+      tmp.component = Layout
+      // delete tmp['component']
     }
+    console.log(tmp.component)
+    if (route.children) {
+      tmp.children = filterAsyncRoutes(tmp.children)
+    }
+
+    res.push(tmp)
+    
   })
 
   return res
@@ -47,20 +57,25 @@ const mutations = {
 }
 
 const actions = {
-  generateRoutes({ commit }, role) {
-    
-    return new Promise(resolve => {
-      let accessedRoutes
-      if (role == 'supper_admin') {
-        accessedRoutes = asyncRoutes || []
-      } else {
-        accessedRoutes = filterAsyncRoutes(asyncRoutes, role)
-      }
+  async generateRoutes({ commit }, role) {
+    let accessedRoutes
+    const result = await getAsyncMenus(role);
+    if (!result.data || result.data.length < 1) {
+      accessedRoutes = []
+    }else {
+      accessedRoutes = filterAsyncRoutes(result.data)
+    }
 
-      commit('SET_ROUTES', accessedRoutes)
+    console.log(accessedRoutes)
+
+    commit('SET_ROUTES', accessedRoutes)
+
+    return new Promise(resolve => {
       resolve(accessedRoutes)
     })
+    
   }
+
 }
 
 export default {

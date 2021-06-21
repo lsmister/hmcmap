@@ -240,8 +240,14 @@ export default {
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           UserApi.createData(this.temp).then((response) => {
-            this.temp.id = response.data.id;
-            this.list.push(this.temp);
+            const newrow = {
+              id: response.data.id,
+              name: response.data.name,
+              username: response.data.username,
+              role_label: response.data.role_label
+            }
+            
+            this.list.push(newrow);
             this.dialogFormVisible = false;
             this.$notify({
               title: "成功",
